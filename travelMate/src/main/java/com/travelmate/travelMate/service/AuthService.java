@@ -7,6 +7,7 @@ import com.travelmate.travelMate.entity.Role;
 import com.travelmate.travelMate.entity.User;
 import com.travelmate.travelMate.repository.RoleRepository;
 import com.travelmate.travelMate.repository.UserRepository;
+import com.travelmate.travelMate.security.JwtService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,15 +23,18 @@ public class AuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public AuthService(
             UserRepository userRepository,
             RoleRepository roleRepository,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService) {
 
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @Transactional
@@ -99,13 +103,17 @@ public class AuthService {
             );
         }
 
+        // Generate JWT after successful authentication
+        String token = jwtService.generateToken(user);
+
         // Return safe user information
         return new AuthResponse(
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getRole().getName()
+                user.getRole().getName(),
+                token
         );
     }
 }

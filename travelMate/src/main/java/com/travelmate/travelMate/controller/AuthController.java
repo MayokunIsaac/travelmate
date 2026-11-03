@@ -1,5 +1,7 @@
 package com.travelmate.travelMate.controller;
 
+import com.travelmate.travelMate.dto.LoginRequest;
+import com.travelmate.travelMate.dto.AuthResponse;
 import com.travelmate.travelMate.dto.RegisterRequest;
 import com.travelmate.travelMate.service.AuthService;
 
@@ -21,8 +23,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping(
-            "/register")
+    @PostMapping("/register")
     public ResponseEntity<Map<String, String>> register(
             @Valid @RequestBody RegisterRequest request) {
 
@@ -34,5 +35,14 @@ public class AuthController {
                         "message",
                         "User registered successfully"
                 ));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(
+            @Valid @RequestBody LoginRequest request) {
+
+        AuthResponse response = authService.login(request);
+
+        return ResponseEntity.ok(response);
     }
 }
